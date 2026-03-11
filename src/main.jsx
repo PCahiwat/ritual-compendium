@@ -22,31 +22,38 @@ async function mount() {
 
   // Only load Bedrock providers when keys are configured
   if (hasBedrock) {
-    const { BedrockPassportProvider } = await import('@bedrock_org/passport');
-    const { default: BedrockAuthProvider } = await import('./providers/BedrockAuthProvider');
-    const defaultChainId = Number(import.meta.env.VITE_DEFAULT_CHAIN_ID ?? 1);
+    try {
+      const { BedrockPassportProvider } = await import('@bedrock_org/passport');
+      const { default: BedrockAuthProvider } = await import('./providers/BedrockAuthProvider');
+      const { default: BedrockErrorBoundary } = await import('./components/BedrockErrorBoundary');
+      const defaultChainId = Number(import.meta.env.VITE_DEFAULT_CHAIN_ID ?? 1);
 
-    const walletConnectId = import.meta.env.VITE_WALLET_CONNECT_ID || undefined;
+      const walletConnectId = import.meta.env.VITE_WALLET_CONNECT_ID || undefined;
 
-    function BedrockWrapper({ children }) {
-      return (
-        <BedrockPassportProvider
-          baseUrl={import.meta.env.VITE_BASE_URL}
-          authCallbackUrl={import.meta.env.VITE_AUTH_CALLBACK_URL}
-          tenantId={import.meta.env.VITE_TENANT_ID}
-          subscriptionKey={import.meta.env.VITE_SUBSCRIPTION_KEY}
-          {...(walletConnectId ? { walletConnectId } : {})}
-          defaultChainId={defaultChainId}
-          isBeta={import.meta.env.VITE_PASSPORT_BETA === 'true'}
-        >
-          <BedrockAuthProvider>
-            {children}
-          </BedrockAuthProvider>
-        </BedrockPassportProvider>
-      );
+      function BedrockWrapper({ children }) {
+        return (
+          <BedrockErrorBoundary>
+            <BedrockPassportProvider
+              baseUrl={import.meta.env.VITE_BASE_URL}
+              authCallbackUrl={import.meta.env.VITE_AUTH_CALLBACK_URL}
+              tenantId={import.meta.env.VITE_TENANT_ID}
+              subscriptionKey={import.meta.env.VITE_SUBSCRIPTION_KEY}
+              {...(walletConnectId ? { walletConnectId } : {})}
+              defaultChainId={defaultChainId}
+              isBeta={import.meta.env.VITE_PASSPORT_BETA === 'true'}
+            >
+              <BedrockAuthProvider>
+                {children}
+              </BedrockAuthProvider>
+            </BedrockPassportProvider>
+          </BedrockErrorBoundary>
+        );
+      }
+
+      AuthWrapper = BedrockWrapper;
+    } catch (err) {
+      console.warn('[Bedrock] Failed to load providers:', err);
     }
-
-    AuthWrapper = BedrockWrapper;
   }
 
   ReactDOM.createRoot(document.getElementById('root')).render(
