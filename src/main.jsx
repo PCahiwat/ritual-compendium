@@ -5,8 +5,28 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http, createConfig, WagmiProvider } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import AuthProvider, { hasBedrock } from './providers/AuthProvider';
+import { safeLocalStorage } from './utils/storage';
 import App from './App';
 import './index.css';
+
+// Intercept /auth/callback BEFORE React mounts.
+// Bedrock redirects here with ?token=xxx&refreshToken=xxx as real URL params.
+// We store them and redirect to the hash-based home route.
+if (window.location.pathname === '/auth/callback') {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const refreshToken = params.get('refreshToken');
+  if (token && refreshToken) {
+    safeLocalStorage.setItem('accessToken', token);
+    safeLocalStorage.setItem('refreshToken', refreshToken);
+    safeLocalStorage.setItem(
+      'passport-token',
+      JSON.stringify({ state: { accessToken: token, refreshToken } })
+    );
+    // Redirect to hash-based home — Bedrock provider will pick up tokens from storage
+    window.location.replace('/#/');
+  }
+}
 
 const queryClient = new QueryClient();
 
