@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useBedrockPassport } from '@bedrock_org/passport';
 import { AuthContext } from '../contexts/AuthContext';
+import { safeLocalStorage, safeSessionStorage } from '../utils/storage';
 
 // This provider is only rendered when BedrockPassportProvider wraps the tree
 export default function BedrockAuthProvider({ children }) {
@@ -23,9 +24,9 @@ export default function BedrockAuthProvider({ children }) {
   const logout = useCallback(async () => {
     try {
       const accessToken =
-        localStorage.getItem('bedrock:accessToken') ||
-        localStorage.getItem('accessToken') ||
-        sessionStorage.getItem('bedrock:accessToken');
+        safeLocalStorage.getItem('bedrock:accessToken') ||
+        safeLocalStorage.getItem('accessToken') ||
+        safeSessionStorage.getItem('bedrock:accessToken');
       if (accessToken) {
         await fetch('https://api.bedrockpassport.com/api/v1/auth/logout', {
           method: 'POST',
@@ -38,17 +39,13 @@ export default function BedrockAuthProvider({ children }) {
 
     await signOut();
 
-    try {
-      localStorage.removeItem('bedrock:accessToken');
-      localStorage.removeItem('bedrock:refreshToken');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('passport-token');
-      sessionStorage.removeItem('bedrock:accessToken');
-      sessionStorage.removeItem('bedrock:refreshToken');
-    } catch {
-      // ignore
-    }
+    safeLocalStorage.removeItem('bedrock:accessToken');
+    safeLocalStorage.removeItem('bedrock:refreshToken');
+    safeLocalStorage.removeItem('accessToken');
+    safeLocalStorage.removeItem('refreshToken');
+    safeLocalStorage.removeItem('passport-token');
+    safeSessionStorage.removeItem('bedrock:accessToken');
+    safeSessionStorage.removeItem('bedrock:refreshToken');
   }, [signOut]);
 
   const value = {

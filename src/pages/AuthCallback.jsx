@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useBedrockPassport } from '@bedrock_org/passport';
 import { useNavigate } from 'react-router-dom';
+import { safeLocalStorage } from '../utils/storage';
 
 export default function AuthCallback() {
   const { loginCallback } = useBedrockPassport();
@@ -10,9 +11,9 @@ export default function AuthCallback() {
     const login = async (token, refreshToken) => {
       const success = await loginCallback(token, refreshToken);
       if (success) {
-        localStorage.setItem('accessToken', token);
-        localStorage.setItem('refreshToken', refreshToken);
-        localStorage.setItem(
+        safeLocalStorage.setItem('accessToken', token);
+        safeLocalStorage.setItem('refreshToken', refreshToken);
+        safeLocalStorage.setItem(
           'passport-token',
           JSON.stringify({ state: { accessToken: token, refreshToken } })
         );
