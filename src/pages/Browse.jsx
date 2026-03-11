@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import SearchBar from '../components/SearchBar';
 import FilterBar from '../components/FilterBar';
 import RitualCard from '../components/RitualCard';
+import RitualListCard from '../components/RitualListCard';
 import { simplifyCountry, extractYear } from '../utils/helpers';
 
 export default function Browse({ rituals, isFavorite, isRead, onToggleFavorite }) {
@@ -9,6 +10,7 @@ export default function Browse({ rituals, isFavorite, isRead, onToggleFavorite }
   const [activeCategory, setActiveCategory] = useState('all');
   const [countryFilter, setCountryFilter] = useState('all');
   const [sortMode, setSortMode] = useState('name-asc');
+  const [viewMode, setViewMode] = useState('grid');
 
   // Derive unique countries
   const countries = useMemo(() => {
@@ -67,6 +69,8 @@ export default function Browse({ rituals, isFavorite, isRead, onToggleFavorite }
           sortMode={sortMode}
           onSortChange={setSortMode}
           countries={countries}
+          viewMode={viewMode}
+          onViewChange={setViewMode}
         />
       </div>
 
@@ -83,16 +87,26 @@ export default function Browse({ rituals, isFavorite, isRead, onToggleFavorite }
           </p>
         </div>
       ) : (
-        <div className="rituals-grid">
-          {filtered.map((ritual) => (
-            <RitualCard
-              key={ritual.id}
-              ritual={ritual}
-              isFavorite={isFavorite(ritual.id)}
-              isRead={isRead(ritual.id)}
-              onToggleFavorite={onToggleFavorite}
-            />
-          ))}
+        <div className={viewMode === 'grid' ? 'rituals-grid' : 'rituals-list'}>
+          {filtered.map((ritual) =>
+            viewMode === 'grid' ? (
+              <RitualCard
+                key={ritual.id}
+                ritual={ritual}
+                isFavorite={isFavorite(ritual.id)}
+                isRead={isRead(ritual.id)}
+                onToggleFavorite={onToggleFavorite}
+              />
+            ) : (
+              <RitualListCard
+                key={ritual.id}
+                ritual={ritual}
+                isFavorite={isFavorite(ritual.id)}
+                isRead={isRead(ritual.id)}
+                onToggleFavorite={onToggleFavorite}
+              />
+            )
+          )}
         </div>
       )}
     </div>
