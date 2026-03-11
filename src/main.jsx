@@ -26,6 +26,8 @@ async function mount() {
     const { default: BedrockAuthProvider } = await import('./providers/BedrockAuthProvider');
     const defaultChainId = Number(import.meta.env.VITE_DEFAULT_CHAIN_ID ?? 1);
 
+    const walletConnectId = import.meta.env.VITE_WALLET_CONNECT_ID || undefined;
+
     function BedrockWrapper({ children }) {
       return (
         <BedrockPassportProvider
@@ -33,7 +35,7 @@ async function mount() {
           authCallbackUrl={import.meta.env.VITE_AUTH_CALLBACK_URL}
           tenantId={import.meta.env.VITE_TENANT_ID}
           subscriptionKey={import.meta.env.VITE_SUBSCRIPTION_KEY}
-          walletConnectId={import.meta.env.VITE_WALLET_CONNECT_ID}
+          {...(walletConnectId ? { walletConnectId } : {})}
           defaultChainId={defaultChainId}
           isBeta={import.meta.env.VITE_PASSPORT_BETA === 'true'}
         >
