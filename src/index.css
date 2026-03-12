@@ -1455,3 +1455,26 @@ a, button, [role="button"], [role="link"], input, textarea, select {
     gap: var(--space-1);
   }
 }
+
+/* ===== Profile Nav Item ===== */
+.nav-profile {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.nav-profile-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nav-profile.logged-in {
+  color: var(--color-secondary);
+}
+
+.nav-profile.logged-in .nav-profile-avatar {
+  border: 2px solid var(--color-secondary);
+}

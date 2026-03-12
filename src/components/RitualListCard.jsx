@@ -53,11 +53,7 @@ export default function RitualListCard({ ritual, isFavorite, isRead, onToggleFav
           <span className="card-players">
             👤 {ritual.players.split('(')[0].trim()}
           </span>
-          {ritual.origin.year && (
-            <span className="list-card-year">
-              📅 {ritual.origin.year}
-            </span>
-          )}
+
         </div>
       </div>
       <button

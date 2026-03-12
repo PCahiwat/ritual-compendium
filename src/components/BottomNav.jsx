@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const NAV_ITEMS = [
   {
@@ -36,12 +37,28 @@ const NAV_ITEMS = [
   },
 ];
 
+const USER_ICON = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
 export default function BottomNav() {
   const location = useLocation();
+  const { user, isLoggedIn, setShowLogin, logout } = useAuth();
 
   const isActive = (to) => {
     if (to === '/') return location.pathname === '/' || location.pathname === '';
     return location.pathname.startsWith(to);
+  };
+
+  const handleProfileClick = () => {
+    if (isLoggedIn) {
+      logout();
+    } else {
+      setShowLogin(true);
+    }
   };
 
   return (
@@ -57,6 +74,18 @@ export default function BottomNav() {
             {item.label}
           </Link>
         ))}
+        <button
+          className={`nav-item nav-profile${isLoggedIn ? ' logged-in' : ''}`}
+          onClick={handleProfileClick}
+          aria-label={isLoggedIn ? 'Sign out' : 'Sign in'}
+        >
+          {isLoggedIn && user?.picture ? (
+            <img src={user.picture} alt="" className="nav-profile-avatar" />
+          ) : (
+            USER_ICON
+          )}
+          {isLoggedIn ? 'Profile' : 'Sign In'}
+        </button>
       </div>
     </nav>
   );
