@@ -1,0 +1,13 @@
+:{$PORT:3000}
+
+root * /app/dist
+file_server
+
+header {
+    Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: *; style-src 'self' 'unsafe-inline' https: *; connect-src 'self' https: wss: *; img-src 'self' data: https: blob: *; font-src 'self' data: https: *; media-src 'self' https: *; object-src 'none'; frame-src 'self' https: *;"
+    X-Content-Type-Options "nosniff"
+    X-Frame-Options "SAMEORIGIN"
+    Referrer-Policy "strict-origin-when-cross-origin"
+}
+
+try_files {path} /index.html
